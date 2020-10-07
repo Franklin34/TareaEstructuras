@@ -14,8 +14,8 @@ class ArbolBinario:
     def insertar(self, key):
         self._insertar(key)
 
-    def imprimir(self):
-        self._imprimir(" ", self.root, False)
+    def imprimir(self,actual):
+        self._imprimir(" ", actual, False)
 
     def recorrido_preordeniterativo(self):
         self._recorrido_preordeniterativo()
@@ -31,6 +31,30 @@ class ArbolBinario:
     
     def recorrido_enorden(self):
         self._recorrido_enorden()
+
+    def crear_desde_archivo(self, nombre):
+        try:
+            handle = open(nombre, "r")
+        except IOError:
+            return None
+
+        self.root = self._crear_desde_archivo(handle)
+
+        handle.close()
+
+        if self.root is None:
+            return 0
+        return 1
+
+    def _crear_desde_archivo(self, handle):
+        n = handle.readline()
+        if int(n) == -1:
+            return None
+
+        tmp = Nodo(int(n))
+        tmp.left = self._crear_desde_archivo(handle)
+        tmp.right = self._crear_desde_archivo(handle)
+        return tmp
 
     def _insertar(self, key):
         if self.root is None:
@@ -84,27 +108,68 @@ class ArbolBinario:
 
     def _recorrido_enorden(self):
        pila = Pila.Pila()
-       pila.push(self.root)
-       actual = self.root
+       actual = self.root   
+
        while actual is not None:
             pila.push(actual)
             actual = actual.left
-       if actual.left is not None:
-           pila.push(actual);
-           actual = actual.left
-           print(actual.valor)
+            while actual is None and pila.estaVacia() is False:
+                 tmp = pila.pop()
+                 print(tmp.valor,end=" ")
+                 actual = tmp.right
 
-       if actual.right is not None:
-        actual = actual.right
-        actual = pila.pop()
+    def _esEspejo(self,nodoraiz1,nodoraiz2):
+        contador = 0
+        if nodoraiz1.valor != nodoraiz2.valor:
+            return False
+        else:
+             cola = queue.Queue()
+             cola.put(nodoraiz1)
+             cola2 = queue.Queue()
+             cola2.put(nodoraiz2)
 
-       if actual is not None :
-        print (actual.valor)
-        actual = actual.right
 
-           
+             while not cola.empty() and not cola2.empty():
+                 tmp = cola.get()
+                 tmp2 = cola2.get()
+                 if tmp.valor != tmp2.valor:
+                     return False
+                 if tmp.left is not None and tmp2.right is not None:
+                       cola.put(tmp.left)
+                       cola2.put(tmp2.right)
+                 if tmp.right is not None and tmp2.left is not None:
+                       cola.put(tmp.right)
+                       cola2.put(tmp2.left)
 
-        
+             return True
+
+    def _crear_arbolEspejo(self):
+          Nuevo = self.root.valor
+          Nuevo_arbol = Nodo(Nuevo)
+          
+          cola = queue.Queue()
+          cola.put(self.root)
+
+          cola2 = queue.Queue()
+          cola2.put(Nuevo_arbol)
+
+          while not cola.empty() and not cola2.empty():
+              tmp = cola.get()
+              tmp2 = cola2.get()
+
+              if tmp.left is not None:
+                  uno = Nodo(tmp.left.valor)
+                  tmp2.right = uno
+                  cola.put(tmp.left)
+                  cola2.put(uno)
+              if tmp.right is not None:
+                  dos = Nodo(tmp.right.valor)
+                  tmp2.left = dos
+                  cola.put(tmp.right)
+                  cola2.put(dos)
+              
+          return Nuevo_arbol
+
     def _elemento_mayor(self):
         nodo = self.root
         cola = queue.Queue()
@@ -151,6 +216,8 @@ class ArbolBinario:
 
         return contador
         
+   
+
 
 if __name__ == '__main__':
     arbolito = ArbolBinario()
@@ -162,10 +229,13 @@ if __name__ == '__main__':
     arbolito.insertar(12)
     arbolito.insertar(20)
 
-    arbolito.imprimir()
+    arbolito.imprimir(arbolito.root)
     print()
     print("Recorrido Pre_Orden_Iterativo: ",end=" ")
     arbolito.recorrido_preordeniterativo()
+    print()
+    print("Recorrido en Orden iterativo es: ",end=" ")
+    arbolito.recorrido_enorden()
     print()
     print("El nodo mayor es: ",end=" ")
     print(arbolito.elemento_mayor().valor)
@@ -173,5 +243,35 @@ if __name__ == '__main__':
     print(arbolito.cantidadnodos())
     print("La cantidad de hojas es: ",end=" ")
     print(arbolito.cantidadhojas())
-    print("Recorrido en Orden iterativo es: ",end=" ")
-    print(arbolito.recorrido_enorden())
+   
+    print()
+    
+    arbolito1 = ArbolBinario()
+    arbolito1.crear_desde_archivo("espejo_a.txt")
+    print()
+    print("Arbol 1: ")
+    arbolito1.imprimir(arbolito1.root)
+
+    print()
+    
+    arbolito2 = ArbolBinario()
+    arbolito2.crear_desde_archivo("espejo_b.txt")
+    print()
+    print("Arbol 2: ")
+    arbolito2.imprimir(arbolito2.root)
+
+    print()
+
+    if arbolito1._esEspejo(arbolito1.root,arbolito2.root) is True:
+       print("El Arbol 1 es espejo del Arbol 2")
+    else:
+        print("El Arbol 1 no es espejo del Arbol 2")
+
+    print()
+    print()
+    print()
+
+    print("El arbol espejo creado desde el metodo 'Crear arbol espejo' del Arbol 1 es:")
+    print()
+    arbolito1.imprimir(arbolito1._crear_arbolEspejo())
+    print()
