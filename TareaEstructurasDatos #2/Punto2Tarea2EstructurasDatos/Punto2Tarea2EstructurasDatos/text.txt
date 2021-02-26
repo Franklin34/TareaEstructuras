@@ -1,0 +1,6 @@
+Las estructuras de datos son muy importantes en las ciencias computacionales
+ya que permiten gestionar la informacion de una manera mas eficiente. Existen
+diversas estructuras de datos que se pueden utilizar de acuerdo con el problema
+que se requiera resolver. Algunas de las estructuras de datos mas utilizadas son
+los vectores, las listas enlazadas, las colas y las pilas. Tambien existen estructuras
+mas complejas como los arboles y los grafos.
