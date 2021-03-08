@@ -1,9 +1,6 @@
 import queue
 import Pila
 
-from queue import LifoQueue
-from queue import Queue
-
 class Nodo:
     def __init__(self, val=None):
         self.valor = val
@@ -121,25 +118,6 @@ class ArbolBinario:
                  print(tmp.valor,end=" ")
                  actual = tmp.right
 
-    def _recorrido_enordenInverso(self):
-       pila = Pila.Pila()
-       actual = self.root   
-       pila2 = Pila.Pila()
-
-       while actual is not None:
-            pila.push(actual)
-            actual = actual.left
-            while actual is None and pila.estaVacia() is False:
-                 tmp = pila.pop()
-                 pila2.push(tmp)
-                 actual = tmp.right
-
-       while pila2.estaVacia() is False:
-           print(pila2.pop().valor,end=" ")
-           
-    
-
-
     def _esEspejo(self,nodoraiz1,nodoraiz2):
         contador = 0
         if nodoraiz1.valor != nodoraiz2.valor:
@@ -221,22 +199,6 @@ class ArbolBinario:
                 cola.put(tmp.right)
         return contador
 
-    def _recorridoPorNivelInverso(self):
-        cola = queue.Queue()
-        pila = Pila.Pila()
-        cola.put(self.root)
-
-        while not cola.empty():
-            tmp = cola.get()
-            pila.push(tmp)
-            if tmp.left is not None:
-                cola.put(tmp.left)
-            if tmp.right is not None:
-                cola.put(tmp.right)
-
-        while pila.estaVacia() is False:
-            print(pila.pop().valor,end = " ")
-
     def _cantidaddehojas(self):
         contador = 0
         cola = queue.Queue()
@@ -255,114 +217,7 @@ class ArbolBinario:
         return contador
         
    
-    def _sumaDeElementos(self):
-        suma = 0
-        cola = queue.Queue()
 
-        if self.root is None:
-            return 0
-
-        cola.put(self.root)
-
-        while not cola.empty():
-            tmp = cola.get()
-            suma = suma + tmp.valor
-            
-            if tmp.left is not None:
-                cola.put(tmp.left)
-            if tmp.right is not None:
-                cola.put(tmp.right)
-        return suma
-            
-    def _suma_deNivelMayor(self):
-        suma = 0
-
-        cola = queue.Queue()
-
-        if self.root is None:
-            return 0
-
-        cola.put(self.root)
-
-        while not cola.empty():
-            tmp = cola.get()
-            
-
-            if tmp.left is not None:
-                cola.put(tmp.left)
-                suma = suma + tmp.left.valor
-            if tmp.right is not None:
-                cola.put(tmp.right)
-                suma = suma + tmp.right.valor
-
-    def _altura(self, actual):
-
-         if actual is None:
-               return -1
-         max_izq = self._altura(actual.left) + 1
-
-         max_der = self._altura(actual.right) + 1
-
-         if max_izq > max_der:
-            return max_izq
-         return max_der
-                                                                                
-    def _diametro(self,root):                                                                                                               
-         if root is None:
-            return 0                    
-         izq = self._diametro(root.left)
-         der = self._diametro(root.right)
-
-         return max(izq, der) + 1
-
-    def _esOperando(self,valor):
-        if valor == "+" or "-" + "/" + "*" + "%":
-            return True
-        return False
-
-    def _ArbolExpresion(self,expresion):
-        arbol = ArbolBinario()
-        opc = bool(0)
-
-        for i in range(len(expresion)):
-           arbol.insertar(expresion[i])
-        
-
-
-        return arbol
-    #este es el del profe
-    def arbol_expresion(self, posfija):
-        exp = self._construir_arbol_expresion(posfija)
-        self._en_orden(exp)
-        return exp
-
-    def _construir_arbol_expresion(self, posfija):
-        pila = LifoQueue()
-        for valor in posfija.split():
-            if self._es_operador(valor) is True:
-                nuevo = Nodo(valor)
-                nodo_der = pila.get()
-                nodo_izq = pila.get()
-
-                nuevo.left = nodo_izq
-                nuevo.right = nodo_der
-                pila.put(nuevo)
-            else:
-                nuevo = Nodo(valor)
-                pila.put(nuevo)
-        return pila.get()
-        
-    @staticmethod
-    def _es_operador(op):
-        if op in ['+', '-', '*', '/', '^']:
-            return True
-        return False
-  
-    def _en_orden(self, root):
-        if root is not None:
-            self._en_orden(root.left)
-            print(root.valor, end=' ')
-            self._en_orden(root.right)
 
 if __name__ == '__main__':
     arbolito = ArbolBinario()
@@ -376,69 +231,47 @@ if __name__ == '__main__':
 
     arbolito.imprimir(arbolito.root)
     print()
-
-    print(arbolito._sumaDeElementos())
-
-    arbolito._recorrido_enordenInverso()
+    print("Recorrido Pre_Orden_Iterativo: ",end=" ")
+    arbolito.recorrido_preordeniterativo()
     print()
-    arbolito._recorridoPorNivelInverso()
+    print("Recorrido en Orden iterativo es: ",end=" ")
+    arbolito.recorrido_enorden()
     print()
-    print("El diametro es: ", arbolito._diametro(arbolito.root))
-
-    arbolito._ArbolExpresion("3+9/8")
-
-    arbol2 = ArbolBinario()._ArbolExpresion("3+9/7")
-    print()
-    arbol2.imprimir(arbol2.root)
-    print()
-    
-
-    arbolito.imprimir(arbolito.arbol_expresion("3+9/7"))
-
-    # arbolito.imprimir(arbolito.root)
-    #print()
-    #print("Recorrido Pre_Orden_Iterativo: ",end=" ")
-    #arbolito.recorrido_preordeniterativo()
-    #print()
-    #print("Recorrido en Orden iterativo es: ",end=" ")
-    #arbolito.recorrido_enorden()
-    #print()
-    #print("El nodo mayor es: ",end=" ")
-    #print(arbolito.elemento_mayor().valor)
-    #print("La cantidad de nodos es: ",end=" ")
-    #print(arbolito.cantidadnodos())
-    #print("La cantidad de hojas es: ",end=" ")
-    #print(arbolito.cantidadhojas())
+    print("El nodo mayor es: ",end=" ")
+    print(arbolito.elemento_mayor().valor)
+    print("La cantidad de nodos es: ",end=" ")
+    print(arbolito.cantidadnodos())
+    print("La cantidad de hojas es: ",end=" ")
+    print(arbolito.cantidadhojas())
    
     print()
     
-    #arbolito1 = ArbolBinario()
-    #arbolito1.crear_desde_archivo("espejo_a.txt")
-    #print()
-    #print("Arbol 1: ")
-    #arbolito1.imprimir(arbolito1.root)
+    arbolito1 = ArbolBinario()
+    arbolito1.crear_desde_archivo("espejo_a.txt")
+    print()
+    print("Arbol 1: ")
+    arbolito1.imprimir(arbolito1.root)
 
-    #print()
+    print()
     
-    #arbolito2 = ArbolBinario()
-    #arbolito2.crear_desde_archivo("espejo_b.txt")
-    #print()
-    #print("Arbol 2: ")
-    #arbolito2.imprimir(arbolito2.root)
+    arbolito2 = ArbolBinario()
+    arbolito2.crear_desde_archivo("espejo_b.txt")
+    print()
+    print("Arbol 2: ")
+    arbolito2.imprimir(arbolito2.root)
 
-   # print()
+    print()
 
-    #if arbolito1._esEspejo(arbolito1.root,arbolito2.root) is True:
-    #   print("El Arbol 1 es espejo del Arbol 2")
-    #else:
-    #    print("El Arbol 1 no es espejo del Arbol 2")
+    if arbolito1._esEspejo(arbolito1.root,arbolito2.root) is True:
+       print("El Arbol 1 es espejo del Arbol 2")
+    else:
+        print("El Arbol 1 no es espejo del Arbol 2")
 
-    #print()
-    #print()
-    #print()
+    print()
+    print()
+    print()
 
-    #print("El arbol espejo creado desde el metodo 'Crear arbol espejo' del Arbol 1 es:")
-    #print()
-    #arbolito1.imprimir(arbolito1._crear_arbolEspejo())
-    #print()
-
+    print("El arbol espejo creado desde el metodo 'Crear arbol espejo' del Arbol 1 es:")
+    print()
+    arbolito1.imprimir(arbolito1._crear_arbolEspejo())
+    print()
